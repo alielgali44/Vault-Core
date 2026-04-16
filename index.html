@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReportFast • Excel to clean reports in seconds</title>
+  <!-- Lenis Smooth Scroll -->
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    /* hero section */
+    .hero {
+      text-align: center;
+      padding: 2rem 0 3rem;
+    }
+
+    .hero h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      font-size: 1.3rem;
+      color: #334155;
+      max-width: 700px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #e2e8f0;
+      padding: 0.3rem 1rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #1e40af;
+      margin-bottom: 1.5rem;
+    }
+
+    /* demo box */
+    .demo-box {
+      background: white;
+      border-radius: 1.5rem;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
+      padding: 1.8rem;
+      margin: 2rem 0;
+      text-align: center;
+      border: 1px solid #e2e8f0;
+    }
+
+    .demo-box h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .demo-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #0f172a;
+      color: white;
+      padding: 0.8rem 1.8rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 1rem;
+      transition: transform 0.2s;
+    }
+
+    .demo-link:hover {
+      transform: scale(1.02);
+      background: #1e293b;
+    }
+
+    /* benefits grid */
+    .benefits {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.8rem;
+      justify-content: center;
+      margin: 3rem 0;
+    }
+
+    .benefit-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 1.2rem;
+      flex: 1;
+      min-width: 200px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      border: 1px solid #e2e8f0;
+    }
+
+    .benefit-card h4 {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* CTA */
+    .cta {
+      text-align: center;
+      background: #0f172a;
+      color: white;
+      padding: 2.5rem;
+      border-radius: 2rem;
+      margin-top: 2rem;
+    }
+
+    .cta h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .cta-button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 0.9rem 2.2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 60px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.2s;
+    }
+
+    .cta-button:hover {
+      background: #2563eb;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    @media (max-width: 700px) {
+      .hero h1 { font-size: 2rem; }
+      .hero p { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="hero">
+    <div class="badge">⚡ Works offline · No data leaves your system</div>
+    <h1>Turn Excel Budget Files<br>Into Clean Reports in Seconds</h1>
+    <p>Reduce manual work, eliminate errors, and generate donor‑ready reports instantly — fully local and secure.</p>
+  </div>
+
+  <div class="demo-box" id="demoSection">
+    <h3>📹 See it in action</h3>
+    <p style="margin-bottom: 0.5rem;">Watch a 2‑min demo: messy Excel → clean PDF summary</p>
+    <a href="#" class="demo-link" id="demoLink">▶ Watch demo video</a>
+    <p style="font-size: 0.8rem; margin-top: 1rem;">https://drive.google.com/file/d/1jWCompJwQNCTbybdMt_x4S4GXjyJ3sc9/view?usp=sharing</p>
+  </div>
+
+  <div class="benefits">
+    <div class="benefit-card"><h4>⏱️ Saves hours</h4><p>No more manual cleaning or recalculating columns.</p></div>
+    <div class="benefit-card"><h4>✅ Zero errors</h4><p>Deterministic math, no spreadsheet mistakes.</p></div>
+    <div class="benefit-card"><h4>🔒 100% local</h4><p>Data never leaves your laptop – donor compliant.</p></div>
+    <div class="benefit-card"><h4>📄 Instant PDF</h4><p>One click → professional report ready to send.</p></div>
+  </div>
+
+  <div class="cta">
+    <h2>Ready to save time on your next report?</h2>
+    <p style="margin-bottom: 1.5rem;">Book a free, no‑pressure 10‑min demo via WhatsApp.</p>
+    <a href="https://wa.me/256764319384?text=Hi%2C%20I%20saw%20your%20report%20tool%20–%20I%27d%20like%20a%20quick%20demo" class="cta-button" id="whatsappButton">📲 Book a quick demo</a>
+  </div>
+
+  <footer>
+    Works with any Excel budget · Setup in 1 day · Pilot from 200k UGX
+  </footer>
+</div>
+
+<script>
+  // Smooth scroll with Lenis
+  const lenis = new Lenis({ duration: 1.2, smoothWheel: true });
+  function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+  requestAnimationFrame(raf);
+
+  // GSAP fade-in for hero
+  gsap.from(".hero", { opacity: 0, y: 30, duration: 0.8, ease: "power2.out" });
+  gsap.from(".demo-box", { opacity: 0, y: 20, duration: 0.8, delay: 0.2 });
+  gsap.from(".benefit-card", { opacity: 0, y: 20, stagger: 0.1, duration: 0.6, delay: 0.3 });
+
+  // You must replace the WhatsApp link with your real number
+  // Also replace demo link (below)
+  const demoLink = document.getElementById('demoLink');
+  // demoLink.href = "https://drive.google.com/your-demo-video";  // <-- CHANGE THIS
+
+  const whatsappBtn = document.getElementById('whatsappButton');
+  // whatsappBtn.href = "https://wa.me/2567XXXXXXXX?text=Hi%2C%20I%20saw%20your%20site%20and%20want%20a%20demo"; // <-- CHANGE THIS
+</script>
+</body>
+</html>
