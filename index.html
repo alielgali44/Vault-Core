@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Vault Core · Excel Budgets → Intelligence Reports in Seconds</title>
+  <meta name="description" content="Drop a messy Excel budget file. Get back a full financial intelligence report, a one-page executive brief, and an audit log — automatically. Built for accounting firms, NGOs, and finance teams.">
+
+  <!-- Open Graph (WhatsApp / LinkedIn previews) -->
+  <meta property="og:title" content="Vault Core · Financial Intelligence Engine">
+  <meta property="og:description" content="Drop a budget file. Get 3 professional documents back in seconds. Zero manual work.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://alielgali44.github.io/Vault-Core/">
+
+  <!-- Favicon (inline SVG — no extra file needed) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230071e3'/><text y='22' x='5' font-size='18' font-family='system-ui' fill='white'>V</text></svg>">
+
+  <!-- FIX: Apply saved theme BEFORE render to prevent flash -->
+  <script>
+    (function() {
+      var saved = localStorage.getItem('theme');
+      document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
+    })();
+  </script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* ─── THEME VARIABLES ────────────────────────────── */
+    :root,
+    [data-theme="light"] {
+      --bg: #fbfbfd;
+      --bg-rgb: 251, 251, 253;
+      --surface: #ffffff;
+      --card-bg: #ffffff;
+      --text-primary: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --text-muted: #86868b;
+      --border: #e8e8ed;
+      --accent: #0071e3;
+      --accent-hover: #0077ed;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.03);
+      --shadow-md: 0 8px 20px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.02);
+      --shadow-hover: 0 12px 28px rgba(0,0,0,0.08);
+      --output-bg: #f5f7ff;
+    }
+
+    [data-theme="dark"] {
+      --bg: #000000;
+      --bg-rgb: 0, 0, 0;
+      --surface: #1c1c1e;
+      --card-bg: #1c1c1e;
+      --text-primary: #ffffff;
+      --text-secondary: #98989e;
+      --text-muted: #6c6c70;
+      --border: #2c2c2e;
+      --accent: #0a84ff;
+      --accent-hover: #409cff;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.4);
+      --shadow-md: 0 8px 20px rgba(0,0,0,0.5);
+      --shadow-hover: 0 12px 28px rgba(0,0,0,0.6);
+      --output-bg: #0d1117;
+    }
+
+    /* Apply theme to body based on html attribute */
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    /* ─── SCROLL ANIMATIONS ──────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ─── NAVIGATION ─────────────────────────────────── */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(var(--bg-rgb), 0.78);
+      border-bottom: 0.5px solid var(--border);
+      z-index: 100;
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-brand {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+    .nav-brand-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .theme-toggle {
+      background: transparent;
+      border: 0.5px solid var(--border);
+      padding: 0.4rem 1rem;
+      border-radius: 980px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .theme-toggle:hover {
+      background: var(--border);
+      color: var(--text-primary);
+    }
+
+    /* ─── LAYOUT ─────────────────────────────────────── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 6.5rem 2rem 4rem;
+    }
+
+    /* ─── HERO ───────────────────────────────────────── */
+    .hero {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 4rem;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      padding: 0.28rem 1rem;
+      border-radius: 980px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.01em;
+    }
+    .hero h1 {
+      font-size: 3.25rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--text-primary) 65%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      margin-bottom: 1.1rem;
+      line-height: 1.18;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.9rem;
+      line-height: 1.55;
+    }
+    .hero-sub {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    /* ─── DEMO CARD ──────────────────────────────────── */
+    .demo-card {
+      background: var(--card-bg);
+      border-radius: 2rem;
+      padding: 2.2rem 2rem;
+      margin: 2.5rem 0;
+      text-align: center;
+      border: 0.5px solid var(--border);
+      box-shadow: var(--shadow-md);
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+    .demo-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+    }
+    .demo-card h3 {
+      font-size: 1.7rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.01em;
+    }
+    .demo-card p {
+      color: var(--text-secondary);
+      margin-bottom: 0.4rem;
+    }
+    .demo-stat {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .demo-highlight {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      color: #16a34a;
+      font-weight: 500;
+    }
+
+    .demo-link, .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      padding: 0.72rem 1.9rem;
+      border-radius: 980px;
+      font-weight: 500;
+      font-size: 0.94rem;
+      margin-top: 1.1rem;
+      transition: background 0.18s, transform 0.12s;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .demo-link:hover, .cta-button:hover {
+      background: var(--accent-hover);
+      transform: scale(1.025);
+    }
+
+    /* ─── OUTPUTS STRIP ──────────────────────────────── */
+    .outputs-label {
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+    .outputs-strip {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 0.5rem 0 3rem;
+    }
+    .output-chip {
+      background: var(--output-bg);
+      border: 0.5px solid var(--border);
+      border-radius: 1rem;
+      padding: 1rem 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex: 1 1 200px;
+      max-width: 310px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .output-chip:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .output-icon {
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+    .output-text strong {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.2rem;
+    }
+    .output-text span {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+
+    /* ─── BENEFITS GRID ──────────────────────────────── */
+    .section-label {
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 1.2rem;
+    }
+    .benefits {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      justify-content: center;
+      margin: 0.5rem 0 3rem;
+    }
+    .benefit-card {
+      background: var(--card-bg);
+      flex: 1 1 190px;
+      min-width: 170px;
+      padding: 1.5rem;
+      border-radius: 1.5rem;
+      border: 0.5px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .benefit-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent);
+    }
+    .benefit-icon {
+      width: 34px;
+      height: 34px;
+      margin: 0 auto 0.85rem;
+      stroke: var(--accent);
+      stroke-width: 1.5;
+      fill: none;
+    }
+    .benefit-card h4 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: var(--text-primary);
+    }
+    .benefit-card p {
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    /* ─── CTA SECTION ────────────────────────────────── */
+    .cta-section {
+      background: var(--surface);
+      border-radius: 2rem;
+      padding: 2.8rem 2rem;
+      text-align: center;
+      margin-top: 3rem;
+      border: 0.5px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .cta-section h2 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      margin-bottom: 0.5rem;
+    }
+    .cta-section p {
+      color: var(--text-secondary);
+      margin-bottom: 0.3rem;
+      font-size: 1rem;
+    }
+    .cta-note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────── */
+    footer {
+      margin-top: 4rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-top: 0.5px solid var(--border);
+      padding-top: 2rem;
+      line-height: 1.8;
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────────── */
+    @media (max-width: 700px) {
+      .container { padding: 5.5rem 1.25rem 3rem; }
+      .hero h1 { font-size: 2.1rem; }
+      .hero p { font-size: 1rem; }
+      .demo-card h3 { font-size: 1.4rem; }
+      .cta-section h2 { font-size: 1.4rem; }
+      .benefit-card { min-width: 150px; }
+      .output-chip { max-width: 100%; }
+      .nav { padding: 0.7rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a class="nav-brand" href="#">
+      <span class="nav-brand-dot"></span>
+      Vault Core
+    </a>
+    <button class="theme-toggle" id="themeToggle">🌙 Dark</button>
+  </nav>
+
+  <div class="container">
+
+    <!-- ─── HERO ─── -->
+    <div class="hero">
+      <div class="badge reveal">⚡ Fully local · Zero data leaves your system</div>
+      <h1 class="reveal reveal-delay-1">Turn Excel Budgets<br>Into Intelligence Reports</h1>
+      <p class="reveal reveal-delay-2">Eliminate manual cleanup, catch every anomaly, and deliver boardroom-ready PDFs — automatically.</p>
+      <div class="hero-sub reveal reveal-delay-3">Built for accounting firms, NGOs, and finance teams.</div>
+    </div>
+
+    <!-- ─── DEMO CARD ─── -->
+    <div class="demo-card reveal">
+      <h3>See it in action</h3>
+      <p>Messy Excel budget → 3 professional documents</p>
+      <p class="demo-stat">Before: raw rows, calculation errors, currency mismatches<br>After: full report + executive brief + audit log</p>
+      <p class="demo-highlight">⚡ Runs automatically · No manual work</p>
+      <a href="https://drive.google.com/file/d/1jWCompJwQNCTbybdMt_x4S4GXjyJ3sc9/view?usp=drive_link"
+         class="demo-link"
+         target="_blank"
+         rel="noopener">▶ Watch demo video</a>
+    </div>
+
+    <!-- ─── OUTPUT DOCUMENTS STRIP ─── -->
+    <p class="outputs-label reveal">Every run produces</p>
+    <div class="outputs-strip">
+      <div class="output-chip reveal reveal-delay-1">
+        <div class="output-icon">📊</div>
+        <div class="output-text">
+          <strong>Intelligence Report</strong>
+          <span>KPIs · Risk score · Anomaly breakdown · Cost drivers</span>
+        </div>
+      </div>
+      <div class="output-chip reveal reveal-delay-2">
+        <div class="output-icon">📄</div>
+        <div class="output-text">
+          <strong>Executive Brief</strong>
+          <span>1-page client-ready summary · Board and donor ready</span>
+        </div>
+      </div>
+      <div class="output-chip reveal reveal-delay-3">
+        <div class="output-icon">🗂️</div>
+        <div class="output-text">
+          <strong>Audit Log</strong>
+          <span>Timestamped run record · Anomaly count · Data health %</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── BENEFITS ─── -->
+    <p class="section-label reveal">Why it works</p>
+    <div class="benefits">
+      <div class="benefit-card reveal reveal-delay-1">
+        <svg class="benefit-icon" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <h4>Saves hours</h4>
+        <p>No more manual cleaning, column recalculation, or copy-paste errors.</p>
+      </div>
+      <div class="benefit-card reveal reveal-delay-2">
+        <svg class="benefit-icon" viewBox="0 0 24 24">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <h4>Catches anomalies</h4>
+        <p>Critical flags, calculation mismatches, and currency errors — all classified automatically.</p>
+      </div>
+      <div class="benefit-card reveal reveal-delay-3">
+        <svg class="benefit-icon" viewBox="0 0 24 24">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        <h4>100% local</h4>
+        <p>Data never leaves your machine. Donor-compliant and audit-safe.</p>
+      </div>
+      <div class="benefit-card reveal reveal-delay-4">
+        <svg class="benefit-icon" viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+        <h4>Client-ready PDF</h4>
+        <p>Professional output you can send directly — no formatting, no cleanup.</p>
+      </div>
+    </div>
+
+    <!-- ─── CTA ─── -->
+    <div class="cta-section reveal">
+      <h2>See Your Budget Converted in Seconds</h2>
+      <p>Send one Excel file. Get a full intelligence report back — free, no strings.</p>
+      <p class="cta-note">Pilot starts from UGX 350,000/month · No contract · Cancel anytime</p>
+      <a href="https://wa.me/256726432203?text=Hi%2C%20I%20want%20to%20test%20my%20Excel%20file%20with%20Vault%20Core"
+         class="cta-button"
+         target="_blank"
+         rel="noopener">
+        📲 Test with your file
+      </a>
+    </div>
+
+    <footer>
+      Works with any Excel budget · Setup in 1 day · Fully local · No data ever leaves your system<br>
+      © 2026 Vault Core
+    </footer>
+
+  </div>
+
+  <script>
+    // ─── THEME: read from <html data-theme> set before render ───
+    const html = document.documentElement;
+    const toggleBtn = document.getElementById('themeToggle');
+
+    function applyTheme(theme) {
+      html.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      toggleBtn.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+    }
+
+    // Sync button label to current theme (already set by inline script in head)
+    toggleBtn.textContent = html.getAttribute('data-theme') === 'dark' ? '☀️ Light' : '🌙 Dark';
+
+    toggleBtn.addEventListener('click', () => {
+      const current = html.getAttribute('data-theme');
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+
+    // ─── SCROLL ANIMATIONS ───────────────────────────────────
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(el => {
+        if (el.isIntersecting) {
+          el.target.classList.add('visible');
+          observer.unobserve(el.target); // fire once
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
