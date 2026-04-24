@@ -5,550 +5,756 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Vault Core · Excel Budgets → Intelligence Reports in Seconds</title>
   <meta name="description" content="Drop a messy Excel budget file. Get back a full financial intelligence report, a one-page executive brief, and an audit log — automatically. Built for accounting firms, NGOs, and finance teams.">
-
-  <!-- Open Graph (WhatsApp / LinkedIn previews) -->
   <meta property="og:title" content="Vault Core · Financial Intelligence Engine">
   <meta property="og:description" content="Drop a budget file. Get 3 professional documents back in seconds. Zero manual work.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://alielgali44.github.io/Vault-Core/">
-
-  <!-- Favicon (inline SVG — no extra file needed) -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230071e3'/><text y='22' x='5' font-size='18' font-family='system-ui' fill='white'>V</text></svg>">
 
-  <!-- FIX: Apply saved theme BEFORE render to prevent flash -->
+  <!-- Anti-flash: apply saved theme before first paint -->
   <script>
-    (function() {
-      var saved = localStorage.getItem('theme');
-      document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
+    (function(){
+      var t = localStorage.getItem('theme');
+      document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
     })();
   </script>
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-    /* ─── THEME VARIABLES ────────────────────────────── */
+    /* ═══════════════════════════════════════
+       TOKENS
+    ═══════════════════════════════════════ */
     :root,
     [data-theme="light"] {
-      --bg: #fbfbfd;
-      --bg-rgb: 251, 251, 253;
-      --surface: #ffffff;
-      --card-bg: #ffffff;
-      --text-primary: #1d1d1f;
-      --text-secondary: #6e6e73;
-      --text-muted: #86868b;
-      --border: #e8e8ed;
-      --accent: #0071e3;
-      --accent-hover: #0077ed;
-      --shadow-sm: 0 2px 8px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.03);
-      --shadow-md: 0 8px 20px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.02);
-      --shadow-hover: 0 12px 28px rgba(0,0,0,0.08);
-      --output-bg: #f5f7ff;
+      --bg:           #f8f8fa;
+      --bg-rgb:       248,248,250;
+      --surface:      #ffffff;
+      --surface-2:    #f2f2f7;
+      --card-bg:      #ffffff;
+      --text-1:       #1d1d1f;
+      --text-2:       #6e6e73;
+      --text-3:       #aeaeb2;
+      --border:       #e5e5ea;
+      --accent:       #0071e3;
+      --accent-h:     #0064cc;
+      --accent-dim:   rgba(0,113,227,.10);
+      --critical:     #dc2626;
+      --critical-bg:  #fef2f2;
+      --warning:      #d97706;
+      --warning-bg:   #fffbeb;
+      --ok:           #16a34a;
+      --ok-bg:        #f0fdf4;
+      --sh-sm:        0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.03);
+      --sh-md:        0 4px 16px rgba(0,0,0,.06), 0 1px 4px rgba(0,0,0,.03);
+      --sh-lg:        0 12px 32px rgba(0,0,0,.09), 0 2px 8px rgba(0,0,0,.04);
+      --sh-hover:     0 20px 40px rgba(0,0,0,.12);
+      --step-line:    #e5e5ea;
     }
 
     [data-theme="dark"] {
-      --bg: #000000;
-      --bg-rgb: 0, 0, 0;
-      --surface: #1c1c1e;
-      --card-bg: #1c1c1e;
-      --text-primary: #ffffff;
-      --text-secondary: #98989e;
-      --text-muted: #6c6c70;
-      --border: #2c2c2e;
-      --accent: #0a84ff;
-      --accent-hover: #409cff;
-      --shadow-sm: 0 2px 8px rgba(0,0,0,0.4);
-      --shadow-md: 0 8px 20px rgba(0,0,0,0.5);
-      --shadow-hover: 0 12px 28px rgba(0,0,0,0.6);
-      --output-bg: #0d1117;
+      --bg:           #0a0a0b;
+      --bg-rgb:       10,10,11;
+      --surface:      #1c1c1e;
+      --surface-2:    #2c2c2e;
+      --card-bg:      #1c1c1e;
+      --text-1:       #f5f5f7;
+      --text-2:       #98989d;
+      --text-3:       #636366;
+      --border:       #2c2c2e;
+      --accent:       #0a84ff;
+      --accent-h:     #409cff;
+      --accent-dim:   rgba(10,132,255,.14);
+      --critical:     #f87171;
+      --critical-bg:  #2d1b1b;
+      --warning:      #fbbf24;
+      --warning-bg:   #2d2310;
+      --ok:           #4ade80;
+      --ok-bg:        #0f2d1b;
+      --sh-sm:        0 1px 3px rgba(0,0,0,.4);
+      --sh-md:        0 4px 16px rgba(0,0,0,.5);
+      --sh-lg:        0 12px 32px rgba(0,0,0,.6);
+      --sh-hover:     0 20px 40px rgba(0,0,0,.7);
+      --step-line:    #2c2c2e;
     }
 
-    /* Apply theme to body based on html attribute */
+    /* ═══════════════════════════════════════
+       BASE
+    ═══════════════════════════════════════ */
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
       background: var(--bg);
-      color: var(--text-primary);
+      color: var(--text-1);
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
-      transition: background 0.25s ease, color 0.25s ease;
+      transition: background .3s, color .3s;
+      padding-bottom: env(safe-area-inset-bottom);
     }
 
-    /* ─── SCROLL ANIMATIONS ──────────────────────────── */
+    /* ═══════════════════════════════════════
+       ANIMATIONS
+    ═══════════════════════════════════════ */
     .reveal {
       opacity: 0;
-      transform: translateY(22px);
-      transition: opacity 0.55s ease, transform 0.55s ease;
+      transform: translateY(24px);
+      transition: opacity .6s cubic-bezier(.22,.68,0,1.2),
+                  transform .6s cubic-bezier(.22,.68,0,1.2);
     }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .reveal-delay-1 { transition-delay: 0.1s; }
-    .reveal-delay-2 { transition-delay: 0.2s; }
-    .reveal-delay-3 { transition-delay: 0.3s; }
-    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal.in { opacity:1; transform:translateY(0); }
+    .d1 { transition-delay:.08s; }
+    .d2 { transition-delay:.16s; }
+    .d3 { transition-delay:.24s; }
+    .d4 { transition-delay:.32s; }
 
-    /* ─── NAVIGATION ─────────────────────────────────── */
+    /* ═══════════════════════════════════════
+       NAV
+    ═══════════════════════════════════════ */
     .nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      background: rgba(var(--bg-rgb), 0.78);
-      border-bottom: 0.5px solid var(--border);
-      z-index: 100;
-      padding: 0.75rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      position:fixed; top:0; left:0; right:0; z-index:200;
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      background: rgba(var(--bg-rgb),.82);
+      border-bottom: .5px solid var(--border);
+      padding: .75rem 2rem;
+      display:flex; justify-content:space-between; align-items:center;
     }
-
     .nav-brand {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.01em;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      text-decoration: none;
+      font-size:.95rem; font-weight:600; letter-spacing:-.01em;
+      color:var(--text-1); text-decoration:none;
+      display:flex; align-items:center; gap:.5rem;
     }
-    .nav-brand-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
+    .brand-pulse {
+      width:8px; height:8px; border-radius:50%;
+      background:var(--accent);
+      animation: pulse 2.4s ease-out infinite;
+    }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(0,113,227,.55); }
+      70%  { box-shadow: 0 0 0 7px rgba(0,113,227,0); }
+      100% { box-shadow: 0 0 0 0 rgba(0,113,227,0); }
+    }
+    [data-theme="dark"] .brand-pulse {
+      animation-name: pulse-dk;
+    }
+    @keyframes pulse-dk {
+      0%   { box-shadow: 0 0 0 0 rgba(10,132,255,.55); }
+      70%  { box-shadow: 0 0 0 7px rgba(10,132,255,0); }
+      100% { box-shadow: 0 0 0 0 rgba(10,132,255,0); }
     }
 
     .theme-toggle {
-      background: transparent;
-      border: 0.5px solid var(--border);
-      padding: 0.4rem 1rem;
-      border-radius: 980px;
-      font-size: 0.82rem;
-      font-weight: 500;
-      cursor: pointer;
-      color: var(--text-secondary);
-      transition: all 0.2s;
-      font-family: inherit;
+      background:transparent; border:.5px solid var(--border);
+      padding:.38rem .95rem; border-radius:980px;
+      font-size:.8rem; font-weight:500; cursor:pointer;
+      color:var(--text-2); font-family:inherit;
+      transition: background .2s, color .2s;
     }
-    .theme-toggle:hover {
-      background: var(--border);
-      color: var(--text-primary);
-    }
+    .theme-toggle:hover { background:var(--border); color:var(--text-1); }
 
-    /* ─── LAYOUT ─────────────────────────────────────── */
+    /* ═══════════════════════════════════════
+       LAYOUT
+    ═══════════════════════════════════════ */
     .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 6.5rem 2rem 4rem;
+      max-width:1080px; margin:0 auto;
+      padding: 7rem 2rem 6rem;
+    }
+    section { margin-bottom: 5rem; }
+
+    .section-eyebrow {
+      text-align:center; font-size:.72rem; font-weight:600;
+      text-transform:uppercase; letter-spacing:.1em;
+      color:var(--text-3); margin-bottom:1rem;
+    }
+    .section-title {
+      text-align:center; font-size:1.9rem; font-weight:700;
+      letter-spacing:-.02em; margin-bottom:.5rem; line-height:1.25;
+    }
+    .section-sub {
+      text-align:center; font-size:1rem; color:var(--text-2);
+      max-width:520px; margin:0 auto 2.5rem;
     }
 
-    /* ─── HERO ───────────────────────────────────────── */
+    /* ═══════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════ */
     .hero {
-      text-align: center;
-      max-width: 760px;
-      margin: 0 auto 4rem;
+      text-align:center; max-width:740px; margin:0 auto 2rem;
     }
     .badge {
-      display: inline-block;
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      padding: 0.28rem 1rem;
-      border-radius: 980px;
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: var(--accent);
-      margin-bottom: 1.5rem;
-      letter-spacing: 0.01em;
+      display:inline-flex; align-items:center; gap:.4rem;
+      background:var(--accent-dim); border:.5px solid rgba(0,113,227,.25);
+      color:var(--accent); padding:.3rem 1rem; border-radius:980px;
+      font-size:.73rem; font-weight:600; letter-spacing:.02em;
+      margin-bottom:1.5rem;
     }
+    [data-theme="dark"] .badge { border-color:rgba(10,132,255,.3); }
+
     .hero h1 {
-      font-size: 3.25rem;
-      font-weight: 700;
-      letter-spacing: -0.025em;
-      background: linear-gradient(135deg, var(--accent) 0%, var(--text-primary) 65%);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      margin-bottom: 1.1rem;
-      line-height: 1.18;
+      font-size:3.4rem; font-weight:700; letter-spacing:-.03em;
+      line-height:1.15; margin-bottom:1.1rem;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--text-1) 60%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background-clip:text;
     }
-    .hero p {
-      font-size: 1.2rem;
-      color: var(--text-secondary);
-      margin-bottom: 0.9rem;
-      line-height: 1.55;
+    .hero-lead {
+      font-size:1.15rem; color:var(--text-2);
+      line-height:1.6; margin-bottom:.8rem;
     }
-    .hero-sub {
-      font-size: 0.875rem;
-      color: var(--text-muted);
+    .hero-note { font-size:.85rem; color:var(--text-3); }
+
+    /* ═══════════════════════════════════════
+       STATS BAR
+    ═══════════════════════════════════════ */
+    .stats-bar {
+      display:flex; flex-wrap:wrap;
+      background:var(--surface); border:.5px solid var(--border);
+      border-radius:1.25rem; padding:1.25rem 1rem;
+      box-shadow:var(--sh-sm); margin:2rem 0 3rem;
+    }
+    .stat-item {
+      flex:1 1 160px; text-align:center; padding:.5rem 1.25rem;
+      border-right:.5px solid var(--border);
+    }
+    .stat-item:last-child { border-right:none; }
+    .stat-num {
+      display:block; font-size:1.6rem; font-weight:700;
+      letter-spacing:-.02em; color:var(--accent);
+      line-height:1; margin-bottom:.3rem;
+    }
+    .stat-label { font-size:.75rem; color:var(--text-2); }
+
+    /* ═══════════════════════════════════════
+       DEMO CARD
+    ═══════════════════════════════════════ */
+    .demo-wrap {
+      background:var(--card-bg); border-radius:2rem;
+      border:.5px solid var(--border); box-shadow:var(--sh-md);
+      overflow:hidden;
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .demo-wrap:hover { transform:translateY(-5px); box-shadow:var(--sh-hover); }
+
+    .demo-thumb {
+      position:relative;
+      background: linear-gradient(135deg,#0f1923 0%,#0a1628 50%,#050e1f 100%);
+      padding:3rem 2rem; text-align:center; cursor:pointer;
+      overflow:hidden; display:block; text-decoration:none;
+    }
+    .demo-thumb::before {
+      content:''; position:absolute; inset:0;
+      background-image:
+        linear-gradient(rgba(0,113,227,.06) 1px, transparent 1px),
+        linear-gradient(90deg,rgba(0,113,227,.06) 1px, transparent 1px);
+      background-size:40px 40px;
+    }
+    .demo-thumb::after {
+      content:''; position:absolute;
+      width:300px; height:300px;
+      background:radial-gradient(circle,rgba(0,113,227,.18) 0%,transparent 70%);
+      top:50%; left:50%; transform:translate(-50%,-50%);
+    }
+    .play-btn {
+      position:relative; z-index:2;
+      width:64px; height:64px; border-radius:50%;
+      background:rgba(255,255,255,.12); border:1.5px solid rgba(255,255,255,.25);
+      backdrop-filter:blur(8px);
+      display:flex; align-items:center; justify-content:center;
+      margin:0 auto 1rem;
+      transition: background .2s, transform .2s;
+    }
+    .demo-thumb:hover .play-btn {
+      background:rgba(0,113,227,.65); transform:scale(1.1);
+    }
+    .play-btn svg { width:22px; height:22px; fill:white; margin-left:3px; }
+
+    .demo-thumb-title {
+      position:relative; z-index:2;
+      font-size:1.1rem; font-weight:600; color:#fff; margin-bottom:.35rem;
+    }
+    .demo-thumb-sub {
+      position:relative; z-index:2;
+      font-size:.8rem; color:rgba(255,255,255,.55);
+    }
+    .demo-tag {
+      position:absolute; top:1rem; right:1rem; z-index:3;
+      background:rgba(22,163,74,.2); border:.5px solid rgba(22,163,74,.4);
+      color:#4ade80; font-size:.7rem; font-weight:600;
+      padding:.25rem .7rem; border-radius:980px;
     }
 
-    /* ─── DEMO CARD ──────────────────────────────────── */
-    .demo-card {
-      background: var(--card-bg);
-      border-radius: 2rem;
-      padding: 2.2rem 2rem;
-      margin: 2.5rem 0;
-      text-align: center;
-      border: 0.5px solid var(--border);
-      box-shadow: var(--shadow-md);
-      transition: transform 0.22s ease, box-shadow 0.22s ease;
+    .demo-body {
+      padding:1.5rem 2rem 1.75rem; text-align:center;
     }
-    .demo-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-hover);
+    .demo-body p { color:var(--text-2); font-size:.9rem; margin-bottom:1rem; }
+
+    .demo-link {
+      display:inline-flex; align-items:center; gap:.45rem;
+      background:var(--accent); color:#fff; text-decoration:none;
+      padding:.7rem 1.8rem; border-radius:980px;
+      font-weight:500; font-size:.92rem;
+      transition: background .18s, transform .12s;
     }
-    .demo-card h3 {
-      font-size: 1.7rem;
-      font-weight: 600;
-      margin-bottom: 0.4rem;
-      letter-spacing: -0.01em;
+    .demo-link:hover { background:var(--accent-h); transform:scale(1.025); }
+
+    /* ═══════════════════════════════════════
+       OUTPUT DOCUMENTS
+    ═══════════════════════════════════════ */
+    .outputs-grid {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:1rem;
     }
-    .demo-card p {
-      color: var(--text-secondary);
-      margin-bottom: 0.4rem;
+    .output-card {
+      background:var(--card-bg); border:.5px solid var(--border);
+      border-radius:1.5rem; padding:1.5rem; box-shadow:var(--sh-sm);
+      transition: border-color .2s, transform .2s, box-shadow .2s;
     }
-    .demo-stat {
-      font-size: 0.85rem;
-      color: var(--text-muted);
+    .output-card:hover {
+      border-color:var(--accent); transform:translateY(-3px);
+      box-shadow:var(--sh-md);
     }
-    .demo-highlight {
-      margin-top: 0.5rem;
-      font-size: 0.85rem;
-      color: #16a34a;
-      font-weight: 500;
+    .output-emoji { font-size:1.6rem; margin-bottom:.75rem; display:block; }
+    .output-card h4 { font-size:.95rem; font-weight:600; margin-bottom:.4rem; }
+    .output-card p  { font-size:.8rem; color:var(--text-2); line-height:1.5; }
+    .output-tags {
+      display:flex; flex-wrap:wrap; gap:.3rem; margin-top:.9rem;
+    }
+    .tag {
+      font-size:.65rem; font-weight:500; padding:.2rem .55rem;
+      border-radius:980px; border:.5px solid transparent;
+    }
+    .tag-blue  { background:var(--accent-dim); color:var(--accent); border-color:rgba(0,113,227,.2); }
+    .tag-red   { background:var(--critical-bg); color:var(--critical); border-color:rgba(220,38,38,.2); }
+    .tag-green { background:var(--ok-bg); color:var(--ok); border-color:rgba(22,163,74,.2); }
+    .tag-amber { background:var(--warning-bg); color:var(--warning); border-color:rgba(217,119,6,.2); }
+
+    /* ═══════════════════════════════════════
+       HOW IT WORKS
+    ═══════════════════════════════════════ */
+    .steps {
+      display:grid; grid-template-columns:repeat(3,1fr);
+      position:relative; gap:0;
+    }
+    .steps::before {
+      content:''; position:absolute;
+      top:1.35rem; left:calc(16.66% + 1.5rem); right:calc(16.66% + 1.5rem);
+      height:1px; background:var(--step-line); z-index:0;
+    }
+    .step { text-align:center; padding:1rem 1.5rem; position:relative; z-index:1; }
+    .step-num {
+      width:44px; height:44px; border-radius:50%;
+      background:var(--card-bg); border:.5px solid var(--border);
+      box-shadow:var(--sh-sm);
+      display:flex; align-items:center; justify-content:center;
+      margin:0 auto .9rem;
+      font-size:.85rem; font-weight:700; color:var(--accent);
+    }
+    .step.active .step-num {
+      background:var(--accent); color:#fff; border-color:var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-dim);
+    }
+    .step h4 { font-size:.95rem; font-weight:600; margin-bottom:.4rem; }
+    .step p  { font-size:.8rem; color:var(--text-2); line-height:1.5; }
+
+    /* ═══════════════════════════════════════
+       BEFORE / AFTER
+    ═══════════════════════════════════════ */
+    .before-after {
+      display:grid; grid-template-columns:1fr auto 1fr;
+      gap:1rem; align-items:start;
+    }
+    .ba-card {
+      background:var(--card-bg); border:.5px solid var(--border);
+      border-radius:1.5rem; padding:1.5rem; box-shadow:var(--sh-sm);
+    }
+    .ba-card.before { border-color:rgba(220,38,38,.35); }
+    .ba-card.after  { border-color:rgba(22,163,74,.35); }
+
+    .ba-label {
+      font-size:.72rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:.08em; margin-bottom:1rem;
+      display:flex; align-items:center; gap:.4rem;
+    }
+    .ba-card.before .ba-label { color:var(--critical); }
+    .ba-card.after  .ba-label { color:var(--ok); }
+
+    .ba-row {
+      display:flex; align-items:flex-start; gap:.65rem;
+      margin-bottom:.7rem; font-size:.84rem; color:var(--text-2);
+    }
+    .ba-icon { flex-shrink:0; margin-top:.05rem; }
+    .ba-arrow {
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.4rem; color:var(--accent); padding-top:1.6rem;
+      flex-shrink:0;
     }
 
-    .demo-link, .cta-button {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      background: var(--accent);
-      color: #fff;
-      text-decoration: none;
-      padding: 0.72rem 1.9rem;
-      border-radius: 980px;
-      font-weight: 500;
-      font-size: 0.94rem;
-      margin-top: 1.1rem;
-      transition: background 0.18s, transform 0.12s;
-      border: none;
-      cursor: pointer;
-      font-family: inherit;
-    }
-    .demo-link:hover, .cta-button:hover {
-      background: var(--accent-hover);
-      transform: scale(1.025);
-    }
-
-    /* ─── OUTPUTS STRIP ──────────────────────────────── */
-    .outputs-label {
-      text-align: center;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-      margin-bottom: 1rem;
-    }
-    .outputs-strip {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin: 0.5rem 0 3rem;
-    }
-    .output-chip {
-      background: var(--output-bg);
-      border: 0.5px solid var(--border);
-      border-radius: 1rem;
-      padding: 1rem 1.4rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex: 1 1 200px;
-      max-width: 310px;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-    .output-chip:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
-    }
-    .output-icon {
-      font-size: 1.4rem;
-      flex-shrink: 0;
-    }
-    .output-text strong {
-      display: block;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 0.2rem;
-    }
-    .output-text span {
-      font-size: 0.78rem;
-      color: var(--text-secondary);
-    }
-
-    /* ─── BENEFITS GRID ──────────────────────────────── */
-    .section-label {
-      text-align: center;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-      margin-bottom: 1.2rem;
-    }
+    /* ═══════════════════════════════════════
+       BENEFITS
+    ═══════════════════════════════════════ */
     .benefits {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.25rem;
-      justify-content: center;
-      margin: 0.5rem 0 3rem;
+      display:grid; grid-template-columns:repeat(4,1fr); gap:1rem;
     }
     .benefit-card {
-      background: var(--card-bg);
-      flex: 1 1 190px;
-      min-width: 170px;
-      padding: 1.5rem;
-      border-radius: 1.5rem;
-      border: 0.5px solid var(--border);
-      box-shadow: var(--shadow-sm);
-      text-align: center;
-      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      background:var(--card-bg); border:.5px solid var(--border);
+      border-radius:1.5rem; padding:1.5rem; box-shadow:var(--sh-sm);
+      transition: border-color .2s, transform .2s, box-shadow .2s;
     }
     .benefit-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
-      border-color: var(--accent);
+      border-color:var(--accent); transform:translateY(-3px);
+      box-shadow:var(--sh-md);
     }
     .benefit-icon {
-      width: 34px;
-      height: 34px;
-      margin: 0 auto 0.85rem;
-      stroke: var(--accent);
-      stroke-width: 1.5;
-      fill: none;
+      width:32px; height:32px; margin-bottom:.75rem;
+      stroke:var(--accent); stroke-width:1.5; fill:none;
+      display:block;
     }
-    .benefit-card h4 {
-      font-size: 1.05rem;
-      font-weight: 600;
-      margin-bottom: 0.4rem;
-      color: var(--text-primary);
-    }
-    .benefit-card p {
-      font-size: 0.83rem;
-      color: var(--text-secondary);
-      line-height: 1.45;
-    }
+    .benefit-card h4 { font-size:.95rem; font-weight:600; margin-bottom:.4rem; }
+    .benefit-card p  { font-size:.8rem; color:var(--text-2); line-height:1.45; }
 
-    /* ─── CTA SECTION ────────────────────────────────── */
+    /* ═══════════════════════════════════════
+       CTA SECTION
+    ═══════════════════════════════════════ */
     .cta-section {
-      background: var(--surface);
-      border-radius: 2rem;
-      padding: 2.8rem 2rem;
-      text-align: center;
-      margin-top: 3rem;
-      border: 0.5px solid var(--border);
-      box-shadow: var(--shadow-sm);
+      background: linear-gradient(135deg, #0071e3 0%, #0055b3 100%);
+      border-radius:2rem; padding:3rem 2rem;
+      text-align:center; box-shadow:var(--sh-lg);
+      position:relative; overflow:hidden;
+    }
+    .cta-section::before {
+      content:''; position:absolute; inset:0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+      background-size:32px 32px;
     }
     .cta-section h2 {
-      font-size: 1.75rem;
-      font-weight: 600;
-      letter-spacing: -0.015em;
-      margin-bottom: 0.5rem;
+      position:relative; font-size:2rem; font-weight:700;
+      color:#fff; letter-spacing:-.02em; margin-bottom:.6rem;
     }
     .cta-section p {
-      color: var(--text-secondary);
-      margin-bottom: 0.3rem;
-      font-size: 1rem;
+      position:relative; color:rgba(255,255,255,.75);
+      font-size:1rem; margin-bottom:.4rem;
     }
     .cta-note {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-bottom: 1rem;
+      position:relative; font-size:.78rem;
+      color:rgba(255,255,255,.5); margin-bottom:1.5rem !important;
+    }
+    .cta-button {
+      position:relative;
+      display:inline-flex; align-items:center; gap:.5rem;
+      background:#fff; color:var(--accent);
+      padding:.8rem 2rem; border-radius:980px;
+      font-weight:600; font-size:.95rem; text-decoration:none;
+      box-shadow: 0 4px 14px rgba(0,0,0,.25);
+      transition: transform .15s, box-shadow .15s;
+    }
+    .cta-button:hover {
+      transform:scale(1.03);
+      box-shadow: 0 6px 20px rgba(0,0,0,.35);
     }
 
-    /* ─── FOOTER ─────────────────────────────────────── */
+    /* ═══════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════ */
     footer {
-      margin-top: 4rem;
-      text-align: center;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      border-top: 0.5px solid var(--border);
-      padding-top: 2rem;
-      line-height: 1.8;
+      margin-top:3rem; text-align:center;
+      font-size:.73rem; color:var(--text-3);
+      border-top:.5px solid var(--border);
+      padding-top:2rem; line-height:2;
     }
 
-    /* ─── RESPONSIVE ─────────────────────────────────── */
-    @media (max-width: 700px) {
-      .container { padding: 5.5rem 1.25rem 3rem; }
-      .hero h1 { font-size: 2.1rem; }
-      .hero p { font-size: 1rem; }
-      .demo-card h3 { font-size: 1.4rem; }
-      .cta-section h2 { font-size: 1.4rem; }
-      .benefit-card { min-width: 150px; }
-      .output-chip { max-width: 100%; }
-      .nav { padding: 0.7rem 1.25rem; }
+    /* ═══════════════════════════════════════
+       STICKY MOBILE CTA
+    ═══════════════════════════════════════ */
+    .mobile-cta {
+      display:none;
+      position:fixed; bottom:0; left:0; right:0; z-index:300;
+      background:var(--surface); border-top:.5px solid var(--border);
+      padding:.85rem 1.25rem calc(.85rem + env(safe-area-inset-bottom));
+      backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    }
+    .mobile-cta a {
+      display:flex; align-items:center; justify-content:center; gap:.5rem;
+      background:var(--accent); color:#fff;
+      padding:.75rem; border-radius:14px;
+      font-weight:600; font-size:.9rem; text-decoration:none;
+      transition: background .18s;
+    }
+    .mobile-cta a:hover { background:var(--accent-h); }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════ */
+    @media (max-width:840px) {
+      .outputs-grid { grid-template-columns:1fr; }
+      .benefits { grid-template-columns:repeat(2,1fr); }
+      .before-after { grid-template-columns:1fr; }
+      .ba-arrow { transform:rotate(90deg); padding:0; margin:.25rem auto; }
+      .steps { grid-template-columns:1fr; gap:1.5rem; }
+      .steps::before { display:none; }
+    }
+
+    @media (max-width:600px) {
+      .container { padding:5.5rem 1.1rem 7rem; }
+      .hero h1 { font-size:2.1rem; }
+      .hero-lead { font-size:1rem; }
+      .section-title { font-size:1.5rem; }
+      .stats-bar { border-radius:1rem; }
+      .stat-item { border-right:none; border-bottom:.5px solid var(--border); }
+      .stat-item:last-child { border-bottom:none; }
+      .benefits { grid-template-columns:1fr 1fr; gap:.75rem; }
+      .cta-section h2 { font-size:1.5rem; }
+      .mobile-cta { display:block; }
+      .nav { padding:.7rem 1.1rem; }
     }
   </style>
 </head>
 <body>
 
-  <nav class="nav">
-    <a class="nav-brand" href="#">
-      <span class="nav-brand-dot"></span>
-      Vault Core
-    </a>
-    <button class="theme-toggle" id="themeToggle">🌙 Dark</button>
-  </nav>
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-brand" href="#">
+    <span class="brand-pulse"></span>Vault Core
+  </a>
+  <button class="theme-toggle" id="themeToggle">🌙 Dark</button>
+</nav>
 
-  <div class="container">
+<div class="container">
 
-    <!-- ─── HERO ─── -->
+  <!-- ── HERO ── -->
+  <section style="margin-bottom:1rem;">
     <div class="hero">
-      <div class="badge reveal">⚡ Fully local · Zero data leaves your system</div>
-      <h1 class="reveal reveal-delay-1">Turn Excel Budgets<br>Into Intelligence Reports</h1>
-      <p class="reveal reveal-delay-2">Eliminate manual cleanup, catch every anomaly, and deliver boardroom-ready PDFs — automatically.</p>
-      <div class="hero-sub reveal reveal-delay-3">Built for accounting firms, NGOs, and finance teams.</div>
+      <div class="badge reveal">⚡ Fully local · Zero data leaves your machine</div>
+      <h1 class="reveal d1">Turn Excel Budgets<br>Into Intelligence Reports</h1>
+      <p class="hero-lead reveal d2">
+        Drop a messy spreadsheet. Get back a full financial report, an executive brief,
+        and an audit log — automatically, in seconds.
+      </p>
+      <p class="hero-note reveal d3">Built for accounting firms, NGOs, and finance teams.</p>
     </div>
+  </section>
 
-    <!-- ─── DEMO CARD ─── -->
-    <div class="demo-card reveal">
-      <h3>See it in action</h3>
-      <p>Messy Excel budget → 3 professional documents</p>
-      <p class="demo-stat">Before: raw rows, calculation errors, currency mismatches<br>After: full report + executive brief + audit log</p>
-      <p class="demo-highlight">⚡ Runs automatically · No manual work</p>
-      <a href="https://drive.google.com/file/d/1jWCompJwQNCTbybdMt_x4S4GXjyJ3sc9/view?usp=drive_link"
-         class="demo-link"
-         target="_blank"
-         rel="noopener">▶ Watch demo video</a>
+  <!-- ── STATS BAR ── -->
+  <div class="stats-bar reveal">
+    <div class="stat-item">
+      <span class="stat-num">4</span>
+     <span class="stat-label">Anomaly severity levels classified</span>
+   </div>
+    <div class="stat-item">
+      <span class="stat-num">3</span>
+      <span class="stat-label">Documents per run</span>
     </div>
+    <div class="stat-item">
+      <span class="stat-num">&lt;5s</span>
+      <span class="stat-label">Average processing time</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">100%</span>
+      <span class="stat-label">Local — no cloud, no exposure</span>
+    </div>
+  </div>
 
-    <!-- ─── OUTPUT DOCUMENTS STRIP ─── -->
-    <p class="outputs-label reveal">Every run produces</p>
-    <div class="outputs-strip">
-      <div class="output-chip reveal reveal-delay-1">
-        <div class="output-icon">📊</div>
-        <div class="output-text">
-          <strong>Intelligence Report</strong>
-          <span>KPIs · Risk score · Anomaly breakdown · Cost drivers</span>
+ <!-- ── DEMO VIDEO ── -->
+<section class="reveal">
+  <div class="demo-wrap">
+    <div class="demo-thumb" style="padding:0; cursor:default; overflow:hidden; border-radius:2rem 2rem 0 0;">
+      <span class="demo-tag">▶ 2 min demo</span>
+      <iframe
+        src="https://www.youtube.com/embed/jRqI4vtg49w?rel=0&modestbranding=1&color=white"
+        title="Vault Core Demo"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        style="width:100%; height:400px; display:block;">
+      </iframe>
+    </div>
+    <div class="demo-body">
+      <p>Raw budget in · Full intelligence report out · Zero manual work.</p>
+    </div>
+  </div>
+</section>
+
+  <!-- ── WHAT IT PRODUCES ── -->
+  <section>
+    <p class="section-eyebrow reveal">Every run produces</p>
+    <div class="outputs-grid">
+      <div class="output-card reveal d1">
+        <span class="output-emoji">📊</span>
+        <h4>Intelligence Report</h4>
+        <p>Multi-page PDF with KPIs, risk score, top cost drivers, and every anomaly classified by severity.</p>
+        <div class="output-tags">
+          <span class="tag tag-blue">Grand total</span>
+          <span class="tag tag-red">Risk score</span>
+          <span class="tag tag-amber">Anomaly breakdown</span>
+          <span class="tag tag-blue">Data health %</span>
         </div>
       </div>
-      <div class="output-chip reveal reveal-delay-2">
-        <div class="output-icon">📄</div>
-        <div class="output-text">
-          <strong>Executive Brief</strong>
-          <span>1-page client-ready summary · Board and donor ready</span>
+      <div class="output-card reveal d2">
+        <span class="output-emoji">📄</span>
+        <h4>Executive Brief</h4>
+        <p>One-page AI-written summary ready to send to a client, board, or donor — no editing required.</p>
+        <div class="output-tags">
+          <span class="tag tag-green">Board ready</span>
+          <span class="tag tag-green">Donor ready</span>
+          <span class="tag tag-blue">Auto-generated</span>
         </div>
       </div>
-      <div class="output-chip reveal reveal-delay-3">
-        <div class="output-icon">🗂️</div>
-        <div class="output-text">
-          <strong>Audit Log</strong>
-          <span>Timestamped run record · Anomaly count · Data health %</span>
+      <div class="output-card reveal d3">
+        <span class="output-emoji">🗂️</span>
+        <h4>Audit Log</h4>
+        <p>Timestamped record for every run — file name, row count, anomaly total, and data health score.</p>
+        <div class="output-tags">
+          <span class="tag tag-blue">Timestamped</span>
+          <span class="tag tag-blue">Full audit trail</span>
+          <span class="tag tag-green">Compliance ready</span>
         </div>
       </div>
     </div>
+    <div style="text-align:center; margin-top:1.75rem;">
+  <a href="https://drive.google.com/file/d/1-ifeiZvQvLRJwibwyIqnx8Uhk7iSDOgU/view?usp=sharing" target="_blank" rel="noopener"
+     style="display:inline-flex; align-items:center; gap:.45rem;
+            border:.5px solid var(--border); border-radius:980px;
+            padding:.6rem 1.4rem; font-size:.85rem; font-weight:500;
+            color:var(--text-2); text-decoration:none;
+            background:var(--surface); transition:border-color .2s, color .2s;">
+    📥 Download a sample report (PDF)
+  </a>
+</div>
+  </section>
 
-    <!-- ─── BENEFITS ─── -->
-    <p class="section-label reveal">Why it works</p>
+  <!-- ── HOW IT WORKS ── -->
+  <section>
+    <p class="section-eyebrow reveal">How it works</p>
+    <h2 class="section-title reveal d1">Three steps. Zero manual work.</h2>
+    <p class="section-sub reveal d2">No training, no setup calls. If you can drop a file into a folder, you're ready.</p>
+    <div class="steps">
+      <div class="step reveal d1">
+        <div class="step-num">1</div>
+        <h4>Drop your Excel file</h4>
+        <p>Place any budget spreadsheet into the input folder. XLSX format, any layout.</p>
+      </div>
+      <div class="step active reveal d2">
+        <div class="step-num">2</div>
+        <h4>Engine runs automatically</h4>
+        <p>Vault Core cleans, normalises, classifies anomalies, scores risk, and generates all three documents.</p>
+      </div>
+      <div class="step reveal d3">
+        <div class="step-num">3</div>
+        <h4>Collect your documents</h4>
+        <p>Pick up the Report, Brief, and Log from the output folder. Send directly to your client.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── BEFORE / AFTER ── -->
+  <section>
+    <p class="section-eyebrow reveal">The difference</p>
+    <h2 class="section-title reveal d1">Before and after Vault Core</h2>
+    <div class="before-after">
+      <div class="ba-card before reveal d1">
+        <div class="ba-label">❌ Before</div>
+        <div class="ba-row"><span class="ba-icon">😩</span><span>Hours spent manually reviewing rows for errors</span></div>
+        <div class="ba-row"><span class="ba-icon">⚠️</span><span>Currency mismatches and calculation errors go unnoticed</span></div>
+        <div class="ba-row"><span class="ba-icon">📋</span><span>Summary report written from scratch every time</span></div>
+        <div class="ba-row"><span class="ba-icon">❓</span><span>No risk score — judgment is entirely manual</span></div>
+        <div class="ba-row"><span class="ba-icon">🔁</span><span>Same cleanup repeated per client, per file</span></div>
+      </div>
+      <div class="ba-arrow reveal">→</div>
+      <div class="ba-card after reveal d2">
+        <div class="ba-label">✅ After</div>
+        <div class="ba-row"><span class="ba-icon">⚡</span><span>File processed in under 5 seconds, fully automatic</span></div>
+        <div class="ba-row"><span class="ba-icon">🔴</span><span>4 critical anomalies flagged and classified instantly</span></div>
+        <div class="ba-row"><span class="ba-icon">📄</span><span>Executive Brief auto-written and client-ready</span></div>
+        <div class="ba-row"><span class="ba-icon">🎯</span><span>Risk score calculated — you know exactly what to trust</span></div>
+        <div class="ba-row"><span class="ba-icon">♾️</span><span>Consistent quality output for every client, every time</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── BENEFITS ── -->
+  <section>
+    <p class="section-eyebrow reveal">Why it works</p>
     <div class="benefits">
-      <div class="benefit-card reveal reveal-delay-1">
-        <svg class="benefit-icon" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="12 6 12 12 16 14"/>
-        </svg>
+      <div class="benefit-card reveal d1">
+        <svg class="benefit-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         <h4>Saves hours</h4>
-        <p>No more manual cleaning, column recalculation, or copy-paste errors.</p>
+        <p>No manual cleaning, column checking, or copy-paste. Every run is instant.</p>
       </div>
-      <div class="benefit-card reveal reveal-delay-2">
-        <svg class="benefit-icon" viewBox="0 0 24 24">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-          <polyline points="22 4 12 14.01 9 11.01"/>
-        </svg>
-        <h4>Catches anomalies</h4>
-        <p>Critical flags, calculation mismatches, and currency errors — all classified automatically.</p>
+      <div class="benefit-card reveal d2">
+        <svg class="benefit-icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <h4>Catches everything</h4>
+        <p>Critical, warning, and info flags on every anomaly. Nothing slips through.</p>
       </div>
-      <div class="benefit-card reveal reveal-delay-3">
-        <svg class="benefit-icon" viewBox="0 0 24 24">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-        </svg>
+      <div class="benefit-card reveal d3">
+        <svg class="benefit-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         <h4>100% local</h4>
         <p>Data never leaves your machine. Donor-compliant and audit-safe.</p>
       </div>
-      <div class="benefit-card reveal reveal-delay-4">
-        <svg class="benefit-icon" viewBox="0 0 24 24">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
-          <line x1="16" y1="13" x2="8" y2="13"/>
-          <line x1="16" y1="17" x2="8" y2="17"/>
-        </svg>
-        <h4>Client-ready PDF</h4>
-        <p>Professional output you can send directly — no formatting, no cleanup.</p>
+      <div class="benefit-card reveal d4">
+        <svg class="benefit-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <h4>Client-ready output</h4>
+        <p>Professional PDFs you send directly — no reformatting, no extra work.</p>
       </div>
     </div>
+  </section>
 
-    <!-- ─── CTA ─── -->
-    <div class="cta-section reveal">
-      <h2>See Your Budget Converted in Seconds</h2>
-      <p>Send one Excel file. Get a full intelligence report back — free, no strings.</p>
-      <p class="cta-note">Pilot starts from UGX 350,000/month · No contract · Cancel anytime</p>
+  <!-- ── CTA ── -->
+  <section class="reveal">
+    <div class="cta-section">
+      <h2>Try it on your own file — free</h2>
+      <p>Send one Excel budget. Get the full report back within 24 hours, no charge.</p>
+      <p>If you like what you see, the pilot starts at UGX 350,000/month.</p>
+      <p class="cta-note">No contract · Cancel anytime · Setup in 1 day</p>
       <a href="https://wa.me/256726432203?text=Hi%2C%20I%20want%20to%20test%20my%20Excel%20file%20with%20Vault%20Core"
-         class="cta-button"
-         target="_blank"
-         rel="noopener">
-        📲 Test with your file
+         class="cta-button" target="_blank" rel="noopener">
+        📲 Test with your file on WhatsApp
       </a>
     </div>
+  </section>
 
-    <footer>
-      Works with any Excel budget · Setup in 1 day · Fully local · No data ever leaves your system<br>
-      © 2026 Vault Core
-    </footer>
+  <footer>
+    Works with any Excel budget &nbsp;·&nbsp; Fully local &nbsp;·&nbsp; No data ever leaves your system<br>
+    © 2026 Vault Core
+  </footer>
 
-  </div>
+</div><!-- /container -->
 
-  <script>
-    // ─── THEME: read from <html data-theme> set before render ───
-    const html = document.documentElement;
-    const toggleBtn = document.getElementById('themeToggle');
+<!-- STICKY MOBILE CTA -->
+<div class="mobile-cta">
+  <a href="https://wa.me/256726432203?text=Hi%2C%20I%20want%20to%20test%20my%20Excel%20file%20with%20Vault%20Core"
+     target="_blank" rel="noopener">
+    📲 Test with your file — free
+  </a>
+</div>
 
-    function applyTheme(theme) {
-      html.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
-      toggleBtn.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
-    }
+<script>
+  /* THEME */
+  const html   = document.documentElement;
+  const toggle = document.getElementById('themeToggle');
 
-    // Sync button label to current theme (already set by inline script in head)
-    toggleBtn.textContent = html.getAttribute('data-theme') === 'dark' ? '☀️ Light' : '🌙 Dark';
+  function applyTheme(t) {
+    html.setAttribute('data-theme', t);
+    localStorage.setItem('theme', t);
+    toggle.textContent = t === 'dark' ? '☀️ Light' : '🌙 Dark';
+  }
 
-    toggleBtn.addEventListener('click', () => {
-      const current = html.getAttribute('data-theme');
-      applyTheme(current === 'dark' ? 'light' : 'dark');
+  toggle.textContent = html.getAttribute('data-theme') === 'dark' ? '☀️ Light' : '🌙 Dark';
+  toggle.addEventListener('click', () => {
+    applyTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+
+  /* SCROLL REVEAL */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
     });
+  }, { threshold: 0.1 });
 
-    // ─── SCROLL ANIMATIONS ───────────────────────────────────
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(el => {
-        if (el.isIntersecting) {
-          el.target.classList.add('visible');
-          observer.unobserve(el.target); // fire once
-        }
-      });
-    }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
 
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-  </script>
 </body>
 </html>
